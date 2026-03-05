@@ -15,11 +15,5 @@ RILEY_ASSISTANT_CONFIG = {
         "speed": 1.0
     },
     "firstMessage": "Thank you for calling Wellness Partners. This is Riley, your scheduling assistant. How may I help you today?",
-    "endCallFunctionEnabled": True,
-    "transcription": {
-        "provider": "deepgram",
-        "language": "en-US"
-    },
-    "fillerWordsEnabled": True,
-    "backchannelingEnabled": True
+    "endCallFunctionEnabled": True
 }

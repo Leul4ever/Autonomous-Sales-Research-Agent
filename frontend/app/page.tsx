@@ -124,7 +124,7 @@ export default function Home() {
       {/* Stats/Benefits Section */}
       <section className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-white/5">
         {[
-          { icon: database, label: "LangChain Agents", value: "3 Ready" },
+          { icon: Database, label: "LangChain Agents", value: "3 Ready" },
           { icon: ShieldCheck, label: "API Security", value: "Locked" },
           { icon: Zap, label: "Latency", value: "<1s Response" },
           { icon: Globe, label: "Global Scale", value: "+100 Countries" }
