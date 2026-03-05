@@ -25,7 +25,6 @@ async def trigger_call(request: CallRequest):
 
     payload = {
         "assistant": RILEY_ASSISTANT_CONFIG,
-        "phoneNumberId": os.getenv("VAPI_PHONE_NUMBER_ID"), # Optional: use Vapi number
         "customer": {
             "number": request.phone_number
         }
