@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from lead_gen.router import router as lead_gen_router
 
 app = FastAPI(title="AI GTM Engine Backend")
 
@@ -11,6 +12,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(lead_gen_router)
 
 @app.get("/")
 async def root():
