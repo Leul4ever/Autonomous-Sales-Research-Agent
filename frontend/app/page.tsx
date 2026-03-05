@@ -70,12 +70,6 @@ export default function Home() {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
-            <Link href="https://github.com/Leul4ever/Autonomous-Sales-Research-Agent" target="_blank">
-              <button className="bg-white/5 border border-white/10 text-white font-semibold h-14 px-8 rounded-2xl hover:bg-white/10 transition-all flex items-center gap-3">
-                View Source Code
-                <Globe className="w-4 h-4 opacity-50" />
-              </button>
-            </Link>
           </div>
         </motion.div>
       </section>
