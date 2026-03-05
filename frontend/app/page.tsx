@@ -1,160 +1,143 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Users,
   PhoneCall,
-  Video,
+  PenTool,
   ArrowRight,
   Zap,
   ShieldCheck,
-  BarChart3
+  Globe,
+  Database
 } from "lucide-react";
-import Link from "next/link";
 
 const engines = [
   {
-    name: "Lead Research",
-    description: "Deep-sea company research and personalized outbound automation.",
+    title: "Lead Research",
+    desc: "Autonomous agent that researches companies and finds decision makers.",
     icon: Users,
     href: "/lead-gen",
-    color: "text-blue-400",
-    bg: "bg-blue-400/10",
-    border: "border-blue-400/20"
+    color: "bg-blue-500",
+    status: "Live"
   },
   {
-    name: "Voice Agent",
-    description: "High-conversion AI voice bots for appointment setting and qualification.",
+    title: "Voice Agent",
+    desc: "Riley, the neural AI assistant for automated phone scheduling.",
     icon: PhoneCall,
     href: "/voice-bot",
-    color: "text-violet-400",
-    bg: "bg-violet-400/10",
-    border: "border-violet-400/20"
+    color: "bg-violet-500",
+    status: "Review"
   },
   {
-    name: "Content Engine",
-    description: "Automated social media growth and video script generation.",
-    icon: Video,
+    title: "Content Engine",
+    desc: "Generate LinkedIn posts and viral video scripts in seconds.",
+    icon: PenTool,
     href: "/content-engine",
-    color: "text-emerald-400",
-    bg: "bg-emerald-400/10",
-    border: "border-emerald-400/20"
-  },
-];
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
+    color: "bg-emerald-500",
+    status: "Live"
   }
-};
-
-const item = {
-  hidden: { y: 20, opacity: 0 },
-  show: { y: 0, opacity: 1 }
-};
+];
 
 export default function Home() {
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-24">
+    <div className="max-w-6xl mx-auto space-y-16 pb-24">
       {/* Hero Section */}
-      <section className="space-y-6 pt-8">
+      <section className="relative pt-12 text-left">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-wider"
+          transition={{ duration: 0.5 }}
+          className="space-y-6"
         >
-          <Zap className="w-3 h-3 fill-current" />
-          Brainlancer Selection Phase
-        </motion.div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider">
+            <Zap className="w-3 h-3" />
+            V1.0 Launch Ready
+          </div>
+          <h1 className="text-7xl font-bold tracking-tight bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent leading-[1.1]">
+            Scale your GTM with <br />
+            <span className="text-blue-500">Autonomous AI.</span>
+          </h1>
+          <p className="text-muted-foreground text-xl max-w-2xl leading-relaxed">
+            The AI GTM Engine unifies lead research, voice automation, and content velocity into a single, premium dashboard. Built for Brainlancer builders.
+          </p>
 
-        <div className="space-y-2">
-          <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/40"
-          >
-            AI GTM Engine
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl text-muted-foreground max-w-2xl"
-          >
-            The next generation of Sales & Marketing automation. Orchestrate your entire go-to-market strategy with specialized AI architects.
-          </motion.p>
-        </div>
+          <div className="flex gap-4 pt-4">
+            <Link href="/lead-gen">
+              <button className="bg-white text-black font-bold h-14 px-8 rounded-2xl hover:bg-white/90 transition-all flex items-center gap-3 group shadow-2xl shadow-white/10">
+                Launch Lead Research
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+            <Link href="https://github.com/Leul4ever/Autonomous-Sales-Research-Agent" target="_blank">
+              <button className="bg-white/5 border border-white/10 text-white font-semibold h-14 px-8 rounded-2xl hover:bg-white/10 transition-all flex items-center gap-3">
+                View Source Code
+                <Globe className="w-4 h-4 opacity-50" />
+              </button>
+            </Link>
+          </div>
+        </motion.div>
       </section>
 
       {/* Engine Grid */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-      >
-        {engines.map((engine) => (
-          <Link key={engine.name} href={engine.href}>
-            <motion.div
-              variants={item}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className={`group p-8 rounded-3xl glass transition-all duration-300 border-b-2 ${engine.border} hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden`}
-            >
-              {/* Subtle accent glow */}
-              <div className={`absolute -right-12 -top-12 w-24 h-24 rounded-full blur-[40px] opacity-20 ${engine.bg}`} />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {engines.map((engine, i) => (
+          <motion.div
+            key={engine.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <Link href={engine.href} className="group block">
+              <div className="h-full p-8 rounded-[2.5rem] glass border-white/5 hover:border-white/20 transition-all relative overflow-hidden">
+                <div className={`absolute -right-8 -top-8 w-32 h-32 ${engine.color} opacity-[0.03] blur-3xl group-hover:opacity-[0.08] transition-opacity`} />
 
-              <div className="flex flex-col h-full gap-6">
-                <div className={`p-3 rounded-2xl w-fit ${engine.bg}`}>
-                  <engine.icon className={`w-8 h-8 ${engine.color}`} />
-                </div>
+                <div className="space-y-6 relative z-10">
+                  <div className="flex justify-between items-start">
+                    <div className={`p-4 rounded-2xl ${engine.color}/10 border border-${engine.color}/20 group-hover:scale-110 transition-transform`}>
+                      <engine.icon className={`w-7 h-7 ${engine.color.replace('bg-', 'text-')}`} />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/30 bg-white/5 px-2 py-1 rounded-md">
+                      {engine.status}
+                    </span>
+                  </div>
 
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-bold text-white group-hover:text-violet-400 transition-colors">
-                    {engine.name}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed text-sm">
-                    {engine.description}
-                  </p>
-                </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold">{engine.title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {engine.desc}
+                    </p>
+                  </div>
 
-                <div className="mt-auto pt-6 flex items-center text-xs font-semibold uppercase tracking-widest text-white/40 group-hover:text-white transition-colors">
-                  Explore Engine
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <div className="pt-4 flex items-center gap-2 text-sm font-semibold text-white/40 group-hover:text-white transition-colors">
+                    Access Engine
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          </Link>
+            </Link>
+          </motion.div>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Stats Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-12 py-12 border-t border-white/5"
-      >
+      {/* Stats/Benefits Section */}
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-white/5">
         {[
-          { label: "Efficiency Boost", value: "85%", icon: BarChart3 },
-          { label: "Lead Precision", value: "99.2%", icon: ShieldCheck },
-          { label: "Cost Reduction", value: "10x", icon: Zap },
+          { icon: database, label: "LangChain Agents", value: "3 Ready" },
+          { icon: ShieldCheck, label: "API Security", value: "Locked" },
+          { icon: Zap, label: "Latency", value: "<1s Response" },
+          { icon: Globe, label: "Global Scale", value: "+100 Countries" }
         ].map((stat, i) => (
-          <div key={i} className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-white/5 border border-white/10">
-              <stat.icon className="w-5 h-5 text-muted-foreground" />
+          <div key={i} className="space-y-2">
+            <div className="flex items-center gap-2 text-white/40">
+              {/* <stat.icon className="w-4 h-4" /> */}
+              <span className="text-xs font-bold uppercase tracking-widest">{stat.label}</span>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-              <p className="text-2xl font-bold text-white">{stat.value}</p>
-            </div>
+            <p className="text-2xl font-bold">{stat.value}</p>
           </div>
         ))}
-      </motion.section>
+      </section>
     </div>
   );
 }
