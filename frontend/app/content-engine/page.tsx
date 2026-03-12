@@ -29,11 +29,15 @@ export default function ContentEnginePage() {
         const endpoint = mode === "posts" ? "social-posts" : "video-script";
 
         try {
-            const response = await fetch(`http://localhost:8000/api/content/${endpoint}`, {
+            const response = await fetch(`http://localhost:8001/api/content/${endpoint}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ topic, target_audience: audience }),
             });
+            if (!response.ok) {
+                console.error("Generation failed:", await response.text().catch(() => ""));
+                throw new Error(`Request failed (${response.status})`);
+            }
             const data = await response.json();
             setResult(data.content);
         } catch (error) {

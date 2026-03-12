@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate
 import requests
@@ -9,7 +9,7 @@ load_dotenv()
 
 class LeadResearchAgent:
     def __init__(self):
-        self.llm = ChatOpenAI(model="gpt-4o", temperature=0)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
         self.search = DuckDuckGoSearchRun()
         self.hunter_api_key = os.getenv("HUNTER_API_KEY")
 

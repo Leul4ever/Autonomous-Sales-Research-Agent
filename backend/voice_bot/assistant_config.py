@@ -5,7 +5,7 @@ RILEY_ASSISTANT_CONFIG = {
     "name": "Riley",
     "model": {
         "provider": "openai",
-        "model": "gpt-4",
+        "model": "gpt-4o-mini",
         "temperature": 0.7,
         "systemPrompt": RILEY_PROMPT
     },

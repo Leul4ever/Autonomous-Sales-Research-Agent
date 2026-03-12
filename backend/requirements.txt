@@ -1,7 +1,8 @@
-fastapi
+ fastapi
 uvicorn
 langchain
 langchain-openai
+langchain-google-genai
 langchain-community
 duckduckgo-search
 python-dotenv

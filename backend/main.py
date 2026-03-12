@@ -1,3 +1,5 @@
+import os
+print(f"!!! CRITICAL DEBUG: main.py starting from {__file__}")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from lead_gen.router import router as lead_gen_router

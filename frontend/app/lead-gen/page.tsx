@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 export default function LeadGenPage() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
+    const [error, setError] = useState<string | null>(null);
     const [company, setCompany] = useState("");
     const [role, setRole] = useState("Marketing Manager");
 
@@ -26,17 +27,23 @@ export default function LeadGenPage() {
         e.preventDefault();
         setLoading(true);
         setResult(null);
+        setError(null);
 
         try {
-            const response = await fetch("http://localhost:8000/api/lead-gen/", {
+            const response = await fetch("http://localhost:8001/api/lead-gen/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ company_name: company, target_role: role }),
             });
+            if (!response.ok) {
+                const text = await response.text().catch(() => "");
+                throw new Error(text || `Request failed (${response.status})`);
+            }
             const data = await response.json();
             setResult(data);
         } catch (error) {
             console.error("Research failed:", error);
+            setError(error instanceof Error ? error.message : "Research failed");
         } finally {
             setLoading(false);
         }
@@ -106,6 +113,11 @@ export default function LeadGenPage() {
                         </button>
                     </div>
                 </form>
+                {error && (
+                    <p className="mt-4 text-sm text-red-400">
+                        {error}
+                    </p>
+                )}
             </div>
 
             <AnimatePresence mode="wait">

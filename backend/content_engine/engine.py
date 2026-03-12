@@ -1,5 +1,5 @@
 import os
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 
@@ -7,7 +7,7 @@ load_dotenv()
 
 class ContentEngine:
     def __init__(self):
-        self.llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.7)
 
     async def generate_social_posts(self, topic: str, target_audience: str):
         prompt = ChatPromptTemplate.from_template("""

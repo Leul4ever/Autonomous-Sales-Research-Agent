@@ -24,7 +24,7 @@ export default function VoiceBotPage() {
         setCallStatus("calling");
 
         try {
-            const response = await fetch("http://localhost:8000/api/voice/call", {
+            const response = await fetch("http://localhost:8001/api/voice/call", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phone_number: phoneNumber }),
@@ -33,6 +33,7 @@ export default function VoiceBotPage() {
             if (response.ok) {
                 setCallStatus("success");
             } else {
+                console.error("Call failed:", await response.text().catch(() => ""));
                 setCallStatus("error");
             }
         } catch (error) {
