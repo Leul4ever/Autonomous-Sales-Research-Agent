@@ -6,7 +6,6 @@ from .assistant_config import RILEY_ASSISTANT_CONFIG
 
 router = APIRouter(prefix="/api/voice", tags=["Voice Bot"])
 
-VAPI_API_KEY = os.getenv("VAPI_PRIVATE_KEY")
 VAPI_URL = "https://api.vapi.ai"
 
 class CallRequest(BaseModel):
@@ -15,15 +14,28 @@ class CallRequest(BaseModel):
 @router.post("/call")
 async def trigger_call(request: CallRequest):
     """Triggers an outbound call via Vapi"""
-    if not VAPI_API_KEY:
-        raise HTTPException(status_code=500, detail="Vapi Key not configured")
+    
+    # Load dynamically to pick up any .env changes without requiring a full server restart
+    from dotenv import load_dotenv
+    import os
+    load_dotenv(override=True)
+    
+    vapi_api_key = os.getenv("VAPI_PRIVATE_KEY")
+    vapi_phone_id = os.getenv("VAPI_PHONE_NUMBER_ID")
+
+    if not vapi_api_key:
+        raise HTTPException(status_code=500, detail="VAPI_PRIVATE_KEY not configured in .env")
+
+    if not vapi_phone_id or vapi_phone_id == "your_phone_number_id_here":
+        raise HTTPException(status_code=500, detail="VAPI_PHONE_NUMBER_ID not configured in .env")
 
     headers = {
-        "Authorization": f"Bearer {VAPI_API_KEY}",
+        "Authorization": f"Bearer {vapi_api_key}",
         "Content-Type": "application/json"
     }
 
     payload = {
+        "phoneNumberId": vapi_phone_id,
         "assistant": RILEY_ASSISTANT_CONFIG,
         "customer": {
             "number": request.phone_number

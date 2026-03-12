@@ -10,8 +10,8 @@ RILEY_ASSISTANT_CONFIG = {
         "systemPrompt": RILEY_PROMPT
     },
     "voice": {
-        "provider": "playht",
-        "voiceId": "susan", # High quality female voice
+        "provider": "11labs",
+        "voiceId": "rachel", # Standard high quality ElevenLabs female voice
         "speed": 1.0
     },
     "firstMessage": "Thank you for calling Wellness Partners. This is Riley, your scheduling assistant. How may I help you today?",
