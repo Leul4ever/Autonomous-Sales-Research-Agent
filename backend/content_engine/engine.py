@@ -7,7 +7,7 @@ load_dotenv()
 
 class ContentEngine:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.7)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.7)
 
     async def generate_social_posts(self, topic: str, target_audience: str):
         prompt = ChatPromptTemplate.from_template("""
@@ -24,8 +24,10 @@ class ContentEngine:
         """)
         
         response = self.llm.invoke(prompt.format(topic=topic, target_audience=target_audience))
-        return response.content
-
+        content = response.content
+        if isinstance(content, list):
+            content = next((item.get("text", "") for item in content if item.get("type") == "text"), "").strip()
+        return content
     async def generate_video_script(self, topic: str, tone: str = "energetic"):
         prompt = ChatPromptTemplate.from_template("""
         You are a professional scriptwriter for short-form video (TikTok/Reels/Shorts).
@@ -42,4 +44,7 @@ class ContentEngine:
         """)
         
         response = self.llm.invoke(prompt.format(topic=topic, tone=tone))
-        return response.content
+        content = response.content
+        if isinstance(content, list):
+            content = next((item.get("text", "") for item in content if item.get("type") == "text"), "").strip()
+        return content

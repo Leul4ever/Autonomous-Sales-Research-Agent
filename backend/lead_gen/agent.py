@@ -9,7 +9,7 @@ load_dotenv()
 
 class LeadResearchAgent:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0)
         self.search = DuckDuckGoSearchRun()
         self.hunter_api_key = os.getenv("HUNTER_API_KEY")
 
@@ -39,8 +39,13 @@ class LeadResearchAgent:
         # 2. Get domain
         domain_prompt = f"What is the official website domain of {company_name}? Return only the domain (e.g. apple.com)."
         domain_response = self.llm.invoke(domain_prompt)
-        domain = domain_response.content.strip()
-
+        
+        domain_content = domain_response.content
+        if isinstance(domain_content, list):
+            domain = next((item.get("text", "") for item in domain_content if item.get("type") == "text"), "").strip()
+        else:
+            domain = domain_content.strip()
+        
         # 3. Find emails if possible
         emails = self.find_emails(domain)
 
@@ -66,8 +71,11 @@ class LeadResearchAgent:
             "role": target_role,
             "emails": emails
         })
-        
-        email_draft = email_draft_response.content
+        email_draft_content = email_draft_response.content
+        if isinstance(email_draft_content, list):
+            email_draft = next((item.get("text", "") for item in email_draft_content if item.get("type") == "text"), "").strip()
+        else:
+            email_draft = email_draft_content
 
         return {
             "company": company_name,
