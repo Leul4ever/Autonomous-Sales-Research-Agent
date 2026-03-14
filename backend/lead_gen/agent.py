@@ -13,10 +13,25 @@ class LeadResearchAgent:
         self.search = DuckDuckGoSearchRun()
         self.hunter_api_key = os.getenv("HUNTER_API_KEY")
 
+    def _get_text_content(self, response_content):
+        """Helper to extract text from various LLM response formats"""
+        if isinstance(response_content, str):
+            return response_content.strip()
+        if isinstance(response_content, list):
+            # Handle list of content blocks
+            text_blocks = [
+                item.get("text", "") if isinstance(item, dict) else str(item)
+                for item in response_content
+                if (isinstance(item, dict) and item.get("type") == "text") or not isinstance(item, dict)
+            ]
+            return " ".join(text_blocks).strip()
+        return str(response_content).strip()
+
     def find_emails(self, domain: str):
         """Finds public emails for a domain using Hunter.io"""
         if not self.hunter_api_key:
-            return "Hunter API Key not configured."
+            print("Hunter API Key not configured.")
+            return []
         
         url = f"https://api.hunter.io/v2/domain-search?domain={domain}&api_key={self.hunter_api_key}"
         try:
@@ -24,27 +39,30 @@ class LeadResearchAgent:
             data = response.json()
             if "data" in data and "emails" in data["data"]:
                 return [e["value"] for e in data["data"]["emails"][:3]]
-            return "No emails found."
+            return []
         except Exception as e:
-            return f"Error finding emails: {str(e)}"
+            print(f"Error finding emails: {str(e)}")
+            return []
 
     async def research_company(self, company_name: str, target_role: str):
         # 1. Search for company news and context
         search_query = f"recent news and focus of {company_name} for {target_role} outreach"
         try:
+            # Run search in a thread to not block the event loop if possible, 
+            # though DDGS is usually fast enough for a prototype.
             context = self.search.run(search_query)
-        except Exception:
-            context = "Recent initiatives and general business growth."
+        except Exception as e:
+            print(f"Search failed: {e}")
+            context = f"Leading company in its sector focusing on {target_role} initiatives."
 
         # 2. Get domain
         domain_prompt = f"What is the official website domain of {company_name}? Return only the domain (e.g. apple.com)."
-        domain_response = self.llm.invoke(domain_prompt)
-        
-        domain_content = domain_response.content
-        if isinstance(domain_content, list):
-            domain = next((item.get("text", "") for item in domain_content if item.get("type") == "text"), "").strip()
-        else:
-            domain = domain_content.strip()
+        try:
+            domain_response = await self.llm.ainvoke(domain_prompt)
+            domain = self._get_text_content(domain_response.content)
+        except Exception as e:
+            print(f"Domain retrieval error: {e}")
+            domain = f"{company_name.lower().replace(' ', '')}.com"
         
         # 3. Find emails if possible
         emails = self.find_emails(domain)
@@ -64,23 +82,23 @@ class LeadResearchAgent:
         - Add a strong call to action.
         """)
         
-        chain = prompt | self.llm
-        email_draft_response = chain.invoke({
-            "context": context,
-            "company": company_name,
-            "role": target_role,
-            "emails": emails
-        })
-        email_draft_content = email_draft_response.content
-        if isinstance(email_draft_content, list):
-            email_draft = next((item.get("text", "") for item in email_draft_content if item.get("type") == "text"), "").strip()
-        else:
-            email_draft = email_draft_content
+        try:
+            chain = prompt | self.llm
+            email_draft_response = await chain.ainvoke({
+                "context": context,
+                "company": company_name,
+                "role": target_role,
+                "emails": emails
+            })
+            email_draft = self._get_text_content(email_draft_response.content)
+        except Exception as e:
+            print(f"Email generation error: {e}")
+            email_draft = f"Hi,\n\nI was researching {company_name} and noticed your work as {target_role}. I'd love to discuss how our AI GTM Engine can help you scale."
 
         return {
             "company": company_name,
             "domain": domain,
-            "context_summary": context[:500] + "...",
+            "context_summary": context[:500] if context else "",
             "found_emails": emails,
             "email_draft": email_draft
         }

@@ -30,7 +30,7 @@ export default function LeadGenPage() {
         setError(null);
 
         try {
-            const response = await fetch("http://localhost:8001/api/lead-gen/", {
+            const response = await fetch("/api/lead-gen/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ company_name: company, target_role: role }),
