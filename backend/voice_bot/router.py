@@ -1,8 +1,11 @@
 import os
 import requests
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from .assistant_config import RILEY_ASSISTANT_CONFIG
+from database import get_db
+from models import CallLog
 
 router = APIRouter(prefix="/api/voice", tags=["Voice Bot"])
 
@@ -12,7 +15,7 @@ class CallRequest(BaseModel):
     phone_number: str
 
 @router.post("/call")
-async def trigger_call(request: CallRequest):
+async def trigger_call(request: CallRequest, db: Session = Depends(get_db)):
     """Triggers an outbound call via Vapi"""
     
     # Load dynamically to pick up any .env changes without requiring a full server restart
@@ -47,12 +50,31 @@ async def trigger_call(request: CallRequest):
     if response.status_code != 201:
         raise HTTPException(status_code=response.status_code, detail=response.text)
         
+    db_call = CallLog(
+        phone_number=request.phone_number,
+        status="triggered"
+    )
+    db.add(db_call)
+    db.commit()
+        
     return response.json()
 
 @router.post("/webhook")
-async def vapi_webhook(request: Request):
+async def vapi_webhook(request: Request, db: Session = Depends(get_db)):
     """Handles webhooks from Vapi (call status, transcripts, etc.)"""
     data = await request.json()
+    
     # Log the event or update the database with call results
-    print(f"Vapi Webhook received: {data.get('type')}")
+    status = data.get("message", {}).get("type") or data.get("type", "unknown")
+    transcript = data.get("message", {}).get("transcript")
+    
+    db_call = CallLog(
+        phone_number="webhook_event",
+        status=status,
+        transcript=transcript
+    )
+    db.add(db_call)
+    db.commit()
+    
+    print(f"Vapi Webhook received: {status}")
     return {"status": "success"}

@@ -5,6 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from lead_gen.router import router as lead_gen_router
 from voice_bot.router import router as voice_bot_router
 from content_engine.router import router as content_engine_router
+from settings_router import router as settings_router
+from database import engine, Base
+import models
+
+# Create all database tables (does nothing if they already exist)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AI GTM Engine Backend")
 
@@ -20,6 +26,7 @@ app.add_middleware(
 app.include_router(lead_gen_router)
 app.include_router(voice_bot_router)
 app.include_router(content_engine_router)
+app.include_router(settings_router)
 
 @app.get("/")
 async def root():
