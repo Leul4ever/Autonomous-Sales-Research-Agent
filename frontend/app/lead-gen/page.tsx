@@ -22,6 +22,8 @@ export default function LeadGenPage() {
     const [error, setError] = useState<string | null>(null);
     const [company, setCompany] = useState("");
     const [role, setRole] = useState("Marketing Manager");
+    const [sending, setSending] = useState(false);
+    const [sent, setSent] = useState(false);
 
     const runResearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,6 +49,15 @@ export default function LeadGenPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const sendToOutreach = async () => {
+        setSending(true);
+        // Simulate an API call to an outreach service
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setSending(false);
+        setSent(true);
+        setTimeout(() => setSent(false), 3000);
     };
 
     const copyToClipboard = (text: string) => {
@@ -194,9 +205,22 @@ export default function LeadGenPage() {
                                     </button>
                                 </div>
 
-                                <button className="w-full mt-6 bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3 group">
-                                    <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                    Send to Outreach Sequence
+                                <button 
+                                    onClick={sendToOutreach}
+                                    disabled={sending || sent}
+                                    className={cn(
+                                        "w-full mt-6 font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3 group shadow-lg",
+                                        sent ? "bg-emerald-600 text-white" : "bg-violet-600 hover:bg-violet-500 text-white shadow-violet-600/20"
+                                    )}
+                                >
+                                    {sending ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : sent ? (
+                                        <CheckCircle2 className="w-5 h-5" />
+                                    ) : (
+                                        <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                    )}
+                                    {sending ? "Adding to Sequence..." : sent ? "Added to Sequence!" : "Send to Outreach Sequence"}
                                 </button>
                             </div>
                         </div>

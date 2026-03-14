@@ -9,6 +9,20 @@ class ContentEngine:
     def __init__(self):
         self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.7)
 
+    def _get_text_content(self, response_content):
+        """Helper to extract text from various LLM response formats"""
+        if isinstance(response_content, str):
+            return response_content.strip()
+        if isinstance(response_content, list):
+            # Handle list of content blocks
+            text_blocks = [
+                item.get("text", "") if isinstance(item, dict) else str(item)
+                for item in response_content
+                if (isinstance(item, dict) and item.get("type") == "text") or not isinstance(item, dict)
+            ]
+            return " ".join(text_blocks).strip()
+        return str(response_content).strip()
+
     async def generate_social_posts(self, topic: str, target_audience: str):
         prompt = ChatPromptTemplate.from_template("""
         You are a world-class social media strategist. 
@@ -20,14 +34,23 @@ class ContentEngine:
         2. Twitter (Punchy, viral-style, <280 chars)
         3. Instagram (Visual-first, engaging caption, emojis)
 
-        Format the output clearly for each platform.
+        Format the output clearly for each platform using this exact style:
+        ### 1. LinkedIn: [Title]
+        **Focus:** *[Focus Area]*
+        **Post Copy:** [The content]
+        **Visual Suggestion:** *[Description]*
+        
+        Repeat for all 3.
         """)
         
-        response = self.llm.invoke(prompt.format(topic=topic, target_audience=target_audience))
-        content = response.content
-        if isinstance(content, list):
-            content = next((item.get("text", "") for item in content if item.get("type") == "text"), "").strip()
-        return content
+        try:
+            formatted_prompt = prompt.format(topic=topic, target_audience=target_audience)
+            response = await self.llm.ainvoke(formatted_prompt)
+            return self._get_text_content(response.content)
+        except Exception as e:
+            print(f"Error generating social posts: {e}")
+            return f"Error: {str(e)}"
+
     async def generate_video_script(self, topic: str, tone: str = "energetic"):
         prompt = ChatPromptTemplate.from_template("""
         You are a professional scriptwriter for short-form video (TikTok/Reels/Shorts).
@@ -43,8 +66,10 @@ class ContentEngine:
         Include visual cues in [brackets].
         """)
         
-        response = self.llm.invoke(prompt.format(topic=topic, tone=tone))
-        content = response.content
-        if isinstance(content, list):
-            content = next((item.get("text", "") for item in content if item.get("type") == "text"), "").strip()
-        return content
+        try:
+            formatted_prompt = prompt.format(topic=topic, tone=tone)
+            response = await self.llm.ainvoke(formatted_prompt)
+            return self._get_text_content(response.content)
+        except Exception as e:
+            print(f"Error generating video script: {e}")
+            return f"Error: {str(e)}"
