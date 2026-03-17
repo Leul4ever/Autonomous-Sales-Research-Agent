@@ -22,19 +22,39 @@ The **AI GTM Engine** is a high-performance, autonomous prospecting and marketin
 
 ---
 
-## 🛠️ The Tech Stack
+## 🏗️ Project Structure
 
-### Frontend (The Face)
-- **Framework:** Next.js 16 (App Router)
-- **Styling:** Tailwind CSS 4.0 + Glassmorphism
-- **Animations:** Framer Motion
-- **Icons:** Lucide React
+```text
+├── 📂 backend/               # FastAPI Server & AI Logic
+│   ├── 📂 content_engine/    # Social media & video script logic
+│   ├── 📂 lead_gen/          # OSINT & Email discovery agents
+│   ├── 📂 voice_bot/        # Vapi AI voice integration
+│   ├── 📄 main.py            # API entry point & router config
+│   ├── 📄 models.py          # SQLAlchemy database schemas
+│   └── 📄 database.py        # SQLite connection & session
+├── 📂 frontend/              # Next.js 16 Web Interface
+│   ├── 📂 app/               # App Router pages (Lead-gen, Content, etc.)
+│   ├── 📂 components/        # Reusable UI components
+│   └── 📂 lib/               # Utility functions (Shadcn/cn)
+├── 📂 docs/                  # Detailed tech documentation
+└── 📄 README.md              # Project overview & quickstart
+```
 
-### Backend (The Muscle)
-- **API:** FastAPI (Async Python)
-- **Orchestration:** LangChain
-- **AI Models:** Google Gemini 1.5 Flash
-- **Database:** SQLite (SQLAlchemy ORM)
+---
+
+## 🛠️ The Tech Stack (Deep Dive)
+
+### 💻 Frontend (The Face)
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router + Turbopack)
+- **Styling:** [Tailwind CSS 4.0](https://tailwindcss.com/) - Utilizing zero-runtime CSS for lightning-fast performance.
+- **Visuals:** [Glassmorphism](https://framer.com/motion/) UI with **Framer Motion** for liquid animations.
+- **Icons:** [Lucide React](https://lucide.dev/) for high-fidelity vector icons.
+
+### ⚙️ Backend (The Muscle)
+- **API Engine:** [FastAPI](https://fastapi.tiangolo.com/) - High-performance asynchronous Python framework.
+- **Agent Orchestration:** [LangChain](https://www.langchain.com/) - Used to build sophisticated chains between LLMs and tools.
+- **AI Brain:** [Google Gemini 1.5 Flash](https://aistudio.google.com/) - Selected for its 1M+ token context window and speed.
+- **Data Persistence:** [SQLAlchemy](https://www.sqlalchemy.org/) ORM with **SQLite** for secure, local data storage.
 
 ---
 
