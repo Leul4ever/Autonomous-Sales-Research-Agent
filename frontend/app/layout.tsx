@@ -24,7 +24,7 @@ export default function RootLayout({
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 blur-[120px] rounded-full pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/5 blur-[100px] rounded-full pointer-events-none" />
 
-          <div className="relative z-10 p-8">
+          <div className="relative z-10 p-4 md:p-8">
             {children}
           </div>
         </main>
