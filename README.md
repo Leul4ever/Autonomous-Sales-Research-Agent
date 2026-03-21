@@ -31,7 +31,7 @@ The **AI GTM Engine** is a high-performance, autonomous prospecting and marketin
 │   ├── 📂 voice_bot/        # Vapi AI voice integration
 │   ├── 📄 main.py            # API entry point & router config
 │   ├── 📄 models.py          # SQLAlchemy database schemas
-│   └── 📄 database.py        # SQLite connection & session
+│   └── 📄 database.py        # SQLAlchemy & Supabase connection logic
 ├── 📂 frontend/              # Next.js 16 Web Interface
 │   ├── 📂 app/               # App Router pages (Lead-gen, Content, etc.)
 │   ├── 📂 components/        # Reusable UI components
@@ -54,7 +54,7 @@ The **AI GTM Engine** is a high-performance, autonomous prospecting and marketin
 - **API Engine:** [FastAPI](https://fastapi.tiangolo.com/) - High-performance asynchronous Python framework.
 - **Agent Orchestration:** [LangChain](https://www.langchain.com/) - Used to build sophisticated chains between LLMs and tools.
 - **AI Brain:** [Google Gemini 1.5 Flash](https://aistudio.google.com/) - Selected for its 1M+ token context window and speed.
-- **Data Persistence:** [SQLAlchemy](https://www.sqlalchemy.org/) ORM with **SQLite** for secure, local data storage.
+- **Data Persistence:** [SQLAlchemy](https://www.sqlalchemy.org/) ORM with **Supabase (PostgreSQL)** - Cloud-hosted data storage for maximum persistence and reliability.
 
 ---
 
