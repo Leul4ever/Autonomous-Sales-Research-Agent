@@ -12,7 +12,8 @@ import {
     Send,
     Building2,
     ExternalLink,
-    Copy
+    Copy,
+    PenTool
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
@@ -27,6 +28,9 @@ export default function LeadGenPage() {
     const [sent, setSent] = useState(false);
     const [copiedEmail, setCopiedEmail] = useState<number | null>(null);
     const [copiedPitch, setCopiedPitch] = useState(false);
+    const [editedPitch, setEditedPitch] = useState("");
+    const [isEditing, setIsEditing] = useState(false);
+    const [updating, setUpdating] = useState(false);
 
     const runResearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,6 +50,7 @@ export default function LeadGenPage() {
             }
             const data = await response.json();
             setResult(data);
+            setEditedPitch(data.email_draft || "");
         } catch (error) {
             console.error("Research failed:", error);
             setError(error instanceof Error ? error.message : "Research failed");
@@ -55,12 +60,46 @@ export default function LeadGenPage() {
     };
 
     const sendToOutreach = async () => {
+        if (!result?.id) return;
         setSending(true);
-        // Simulate an API call to an outreach service
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setSending(false);
-        setSent(true);
-        setTimeout(() => setSent(false), 3000);
+        
+        try {
+            // Update status in backend
+            await fetch(`/api/lead-gen/${result.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "sent", email_draft: editedPitch }),
+            });
+            
+            // Simulate outreach service delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            setSent(true);
+            setResult({ ...result, status: "sent" });
+            setTimeout(() => setSent(false), 3000);
+        } catch (error) {
+            console.error("Outreach failed:", error);
+        } finally {
+            setSending(false);
+        }
+    };
+
+    const syncPitch = async () => {
+        if (!result?.id || !editedPitch) return;
+        setUpdating(true);
+        try {
+            await fetch(`/api/lead-gen/${result.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email_draft: editedPitch }),
+            });
+            setResult({ ...result, email_draft: editedPitch });
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Sync failed:", error);
+        } finally {
+            setUpdating(false);
+        }
     };
 
     const copyToClipboard = async (text: string, type: "email" | "pitch", index?: number) => {
@@ -178,9 +217,12 @@ export default function LeadGenPage() {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold flex items-center gap-1">
-                                        <CheckCircle2 className="w-3 h-3" />
-                                        Verified
+                                    <div className={cn(
+                                        "px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1",
+                                        result.status === "sent" ? "bg-emerald-500/10 text-emerald-400" : "bg-blue-500/10 text-blue-400"
+                                    )}>
+                                        {result.status === "sent" ? <CheckCircle2 className="w-3 h-3" /> : <Database className="w-3 h-3" />}
+                                        {result.status === "sent" ? "Sent" : "Ready"}
                                     </div>
                                 </div>
 
@@ -224,21 +266,51 @@ export default function LeadGenPage() {
                                     <h3 className="text-xl font-bold">AI Generated Pitch</h3>
                                 </div>
 
-                                <div className="bg-black/40 rounded-2xl p-6 border border-white/10 min-h-[300px] relative group text-left">
-                                    <div className="text-muted-foreground text-sm leading-relaxed markdown-content italic">
-                                        <ReactMarkdown>{result.email_draft}</ReactMarkdown>
-                                    </div>
-                                    <button
-                                        onClick={() => copyToClipboard(result.email_draft, "pitch")}
-                                        className={cn(
-                                            "absolute top-4 right-4 p-2 rounded-xl transition-all flex items-center gap-2 text-xs font-bold",
-                                            copiedPitch ? "bg-emerald-500 text-white opacity-100" : "bg-white/10 hover:bg-white/20 opacity-0 group-hover:opacity-100 text-white"
+                                    <div className="bg-black/40 rounded-2xl border border-white/10 min-h-[350px] relative group text-left overflow-hidden">
+                                        {isEditing ? (
+                                            <textarea
+                                                value={editedPitch}
+                                                onChange={(e) => setEditedPitch(e.target.value)}
+                                                className="w-full h-[350px] bg-transparent p-6 text-muted-foreground text-sm leading-relaxed focus:outline-none resize-none"
+                                                placeholder="Edit your pitch here..."
+                                            />
+                                        ) : (
+                                            <div className="p-6 text-muted-foreground text-sm leading-relaxed markdown-content italic">
+                                                <ReactMarkdown>{editedPitch}</ReactMarkdown>
+                                            </div>
                                         )}
-                                    >
-                                        {copiedPitch ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                        {copiedPitch ? "Copied!" : ""}
-                                    </button>
-                                </div>
+                                        
+                                        <div className="absolute top-4 right-4 flex items-center gap-2">
+                                            {isEditing ? (
+                                                <button
+                                                    onClick={syncPitch}
+                                                    disabled={updating}
+                                                    className="p-2 bg-emerald-500 hover:bg-emerald-400 rounded-xl transition-all text-white flex items-center gap-2 text-xs font-bold shadow-lg"
+                                                >
+                                                    {updating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                                                    Save Edit
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => setIsEditing(true)}
+                                                    className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all text-white/60 hover:text-white"
+                                                    title="Edit Pitch"
+                                                >
+                                                    <PenTool className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => copyToClipboard(editedPitch, "pitch")}
+                                                className={cn(
+                                                    "p-2 rounded-xl transition-all flex items-center gap-2 text-xs font-bold",
+                                                    copiedPitch ? "bg-emerald-500 text-white opacity-100" : "bg-white/10 hover:bg-white/20 opacity-0 group-hover:opacity-100 text-white"
+                                                )}
+                                            >
+                                                {copiedPitch ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                                {copiedPitch ? "Copied!" : ""}
+                                            </button>
+                                        </div>
+                                    </div>
 
                                 <button 
                                     onClick={sendToOutreach}
