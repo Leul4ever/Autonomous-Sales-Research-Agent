@@ -21,6 +21,7 @@ export default function SettingsPage() {
         hunter_api_key_set: false,
         gemini_api_key_set: false,
         database_url_set: false,
+        vapi_phone_id: "",
     });
 
     useEffect(() => {
@@ -29,7 +30,7 @@ export default function SettingsPage() {
 
     const fetchSettings = async () => {
         try {
-            const res = await fetch("http://localhost:8001/api/settings/");
+            const res = await fetch("/api/settings/");
             if (res.ok) {
                 const data = await res.json();
                 setStatus(data);
@@ -56,7 +57,7 @@ export default function SettingsPage() {
                 }
             }
 
-            const res = await fetch("http://localhost:8001/api/settings/", {
+            const res = await fetch("/api/settings/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
