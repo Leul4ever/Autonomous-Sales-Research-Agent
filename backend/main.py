@@ -28,10 +28,10 @@ app.include_router(voice_bot_router)
 app.include_router(content_engine_router)
 app.include_router(settings_router)
 
+@app.get("/api/health")
+async def health():
+    return {"status": "healthy", "service": "AI GTM Backend"}
+
 @app.get("/")
 async def root():
     return {"status": "online", "engine": "AI GTM Backend"}
-
-@app.get("/health")
-async def health():
-    return {"status": "healthy"}
