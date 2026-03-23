@@ -11,6 +11,10 @@ class LeadGenRequest(BaseModel):
     company_name: str
     target_role: str
 
+class LeadUpdate(BaseModel):
+    email_draft: str | None = None
+    status: str | None = None
+
 @router.post("/")
 async def run_lead_gen(request: LeadGenRequest, db: Session = Depends(get_db)):
     try:
@@ -29,9 +33,29 @@ async def run_lead_gen(request: LeadGenRequest, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(db_lead)
 
-        return result
+        return {
+            **result,
+            "id": db_lead.id,
+            "status": db_lead.status,
+            "email_draft": db_lead.email_draft
+        }
     except Exception as e:
         import traceback
         print(f"！！！ ERROR IN LEAD GEN: {str(e)}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/{lead_id}")
+async def update_lead(lead_id: int, update: LeadUpdate, db: Session = Depends(get_db)):
+    db_lead = db.query(Lead).filter(Lead.id == lead_id).first()
+    if not db_lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    if update.email_draft is not None:
+        db_lead.email_draft = update.email_draft
+    if update.status is not None:
+        db_lead.status = update.status
+        
+    db.commit()
+    db.refresh(db_lead)
+    return {"status": "success", "lead_id": db_lead.id, "new_status": db_lead.status}

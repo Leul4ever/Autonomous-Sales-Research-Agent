@@ -12,6 +12,7 @@ class Lead(Base):
     context_summary = Column(Text)
     found_emails = Column(JSON) # Store list of strings
     email_draft = Column(Text)
+    status = Column(String, default="researched") # researched, sent, etc.
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Content(Base):
