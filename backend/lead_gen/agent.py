@@ -9,7 +9,8 @@ load_dotenv()
 
 class LeadResearchAgent:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0)
+        model_name = os.getenv("GOOGLE_MODEL", "gemini-1.5-flash")
+        self.llm = ChatGoogleGenerativeAI(model=model_name, temperature=0)
         self.search = DuckDuckGoSearchRun()
         self.hunter_api_key = os.getenv("HUNTER_API_KEY")
 

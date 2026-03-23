@@ -7,7 +7,8 @@ load_dotenv()
 
 class ContentEngine:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.7)
+        model_name = os.getenv("GOOGLE_MODEL", "gemini-1.5-flash")
+        self.llm = ChatGoogleGenerativeAI(model=model_name, temperature=0.7)
 
     def _get_text_content(self, response_content):
         """Helper to extract text from various LLM response formats"""
