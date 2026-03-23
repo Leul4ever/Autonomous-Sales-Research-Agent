@@ -10,7 +10,15 @@ from database import engine, Base
 import models
 
 # Create all database tables (does nothing if they already exist)
-Base.metadata.create_all(bind=engine)
+try:
+    print(f"!!! DB INIT: Connecting to database...")
+    Base.metadata.create_all(bind=engine)
+    print("!!! DB INIT: Success!")
+except Exception as e:
+    print(f"!!! DB INIT ERROR: Could not initialize database: {e}")
+    # In production, we might want to continue and let routes handle the error
+    # or fail early if the DB is strictly required. 
+    # For now, we log it and continue so the app can at least serve the health check.
 
 app = FastAPI(title="AI GTM Engine Backend")
 

@@ -9,6 +9,10 @@ load_dotenv(override=True)
 # Default to a local SQLite database if no Supabase URL is provided
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
 
+# Fix for SQLAlchemy 1.4+ which requires 'postgresql://' instead of 'postgres://'
+if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 # For SQLite, we need connect_args={"check_same_thread": False}
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
