@@ -112,11 +112,30 @@ export default function ContentEnginePage() {
         }
     };
 
-    const copyToClipboard = (text: string, index: number | "all") => {
-        navigator.clipboard.writeText(text);
-        if (typeof index === "number") {
-            setCopiedIndex(index);
-            setTimeout(() => setCopiedIndex(null), 2000);
+    const copyToClipboard = async (text: string, index: number | "all") => {
+        try {
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for non-secure environments
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                const successful = document.execCommand("copy");
+                document.body.removeChild(textArea);
+                if (!successful) throw new Error("copy command failed");
+            }
+            
+            if (typeof index === "number") {
+                setCopiedIndex(index);
+                setTimeout(() => setCopiedIndex(null), 2000);
+            } else if (index === "all") {
+                setCopiedIndex(999);
+                setTimeout(() => setCopiedIndex(null), 2000);
+            }
+        } catch (err) {
+            console.error("Failed to copy!", err);
         }
     };
 
@@ -222,9 +241,13 @@ export default function ContentEnginePage() {
                                         </h3>
                                         <button
                                             onClick={() => copyToClipboard(result!, "all")}
-                                            className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-xs font-bold flex items-center gap-2 border border-white/10"
+                                            className={cn(
+                                                "px-4 py-2 rounded-xl transition-all text-xs font-bold flex items-center gap-2 border border-white/10",
+                                                copiedIndex === 999 ? "bg-emerald-500 text-white" : "bg-white/5 hover:bg-white/10"
+                                            )}
                                         >
-                                            <Copy className="w-3.5 h-3.5" /> Copy All
+                                            {copiedIndex === 999 ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                            {copiedIndex === 999 ? "Copied!" : "Copy All"}
                                         </button>
                                     </div>
                                     <div className="bg-black/40 rounded-3xl p-8 border border-white/10 text-muted-foreground leading-relaxed markdown-content font-medium">
@@ -242,9 +265,13 @@ export default function ContentEnginePage() {
                                         </h3>
                                         <button
                                             onClick={() => copyToClipboard(result!, "all")}
-                                            className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-xs font-bold flex items-center gap-2 border border-white/10 hidden md:flex"
+                                            className={cn(
+                                                "px-4 py-2 rounded-xl transition-all text-xs font-bold flex items-center gap-2 border border-white/10 hidden md:flex",
+                                                copiedIndex === 999 ? "bg-emerald-500 text-white" : "bg-white/5 hover:bg-white/10"
+                                            )}
                                         >
-                                            <Copy className="w-3.5 h-3.5" /> Copy All Posts
+                                            {copiedIndex === 999 ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                            {copiedIndex === 999 ? "Copied!" : "Copy All Posts"}
                                         </button>
                                     </div>
                                     

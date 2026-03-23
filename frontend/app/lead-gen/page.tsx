@@ -25,6 +25,8 @@ export default function LeadGenPage() {
     const [role, setRole] = useState("Marketing Manager");
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
+    const [copiedEmail, setCopiedEmail] = useState<number | null>(null);
+    const [copiedPitch, setCopiedPitch] = useState(false);
 
     const runResearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,9 +63,30 @@ export default function LeadGenPage() {
         setTimeout(() => setSent(false), 3000);
     };
 
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-        // You could add a toast here
+    const copyToClipboard = async (text: string, type: "email" | "pitch", index?: number) => {
+        try {
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for non-secure environments
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+            }
+
+            if (type === "email" && index !== undefined) {
+                setCopiedEmail(index);
+                setTimeout(() => setCopiedEmail(null), 2000);
+            } else if (type === "pitch") {
+                setCopiedPitch(true);
+                setTimeout(() => setCopiedPitch(false), 2000);
+            }
+        } catch (err) {
+            console.error("Failed to copy!", err);
+        }
     };
 
     return (
@@ -174,8 +197,15 @@ export default function LeadGenPage() {
                                         {Array.isArray(result.found_emails) ? result.found_emails.map((email: string, i: number) => (
                                             <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 group">
                                                 <span className="text-sm font-medium">{email}</span>
-                                                <button onClick={() => copyToClipboard(email)} className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-white/10 rounded-lg transition-all">
-                                                    <Copy className="w-4 h-4 text-white/40" />
+                                                <button 
+                                                    onClick={() => copyToClipboard(email, "email", i)} 
+                                                    className={cn(
+                                                        "p-1.5 rounded-lg transition-all flex items-center gap-1.5 text-[10px] font-bold uppercase",
+                                                        copiedEmail === i ? "bg-emerald-500 text-white opacity-100" : "opacity-0 group-hover:opacity-100 hover:bg-white/10 text-white/40"
+                                                    )}
+                                                >
+                                                    {copiedEmail === i ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                                    {copiedEmail === i ? "Copied" : ""}
                                                 </button>
                                             </div>
                                         )) : <p className="text-sm text-white/20">No emails found via Hunter</p>}
@@ -199,10 +229,14 @@ export default function LeadGenPage() {
                                         <ReactMarkdown>{result.email_draft}</ReactMarkdown>
                                     </div>
                                     <button
-                                        onClick={() => copyToClipboard(result.email_draft)}
-                                        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                                        onClick={() => copyToClipboard(result.email_draft, "pitch")}
+                                        className={cn(
+                                            "absolute top-4 right-4 p-2 rounded-xl transition-all flex items-center gap-2 text-xs font-bold",
+                                            copiedPitch ? "bg-emerald-500 text-white opacity-100" : "bg-white/10 hover:bg-white/20 opacity-0 group-hover:opacity-100 text-white"
+                                        )}
                                     >
-                                        <Copy className="w-4 h-4 text-white" />
+                                        {copiedPitch ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                        {copiedPitch ? "Copied!" : ""}
                                     </button>
                                 </div>
 
