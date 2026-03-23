@@ -5,6 +5,7 @@ langchain-openai
 langchain-google-genai
 langchain-community
 duckduckgo-search
+ddgs
 python-dotenv
 sqlalchemy
 psycopg2-binary
