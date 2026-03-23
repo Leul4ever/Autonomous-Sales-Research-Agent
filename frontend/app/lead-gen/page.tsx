@@ -15,6 +15,7 @@ import {
     Copy
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 export default function LeadGenPage() {
     const [loading, setLoading] = useState(false);
@@ -162,9 +163,9 @@ export default function LeadGenPage() {
 
                                 <div className="space-y-4">
                                     <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">Found Intelligence</h4>
-                                    <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                                        {result.context_summary}
-                                    </p>
+                                    <div className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap markdown-content">
+                                        <ReactMarkdown>{result.context_summary}</ReactMarkdown>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-4 pt-4 border-t border-white/5">
@@ -194,8 +195,8 @@ export default function LeadGenPage() {
                                 </div>
 
                                 <div className="bg-black/40 rounded-2xl p-6 border border-white/10 min-h-[300px] relative group text-left">
-                                    <div className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap italic">
-                                        {result.email_draft}
+                                    <div className="text-muted-foreground text-sm leading-relaxed markdown-content italic">
+                                        <ReactMarkdown>{result.email_draft}</ReactMarkdown>
                                     </div>
                                     <button
                                         onClick={() => copyToClipboard(result.email_draft)}

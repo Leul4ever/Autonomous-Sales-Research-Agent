@@ -18,6 +18,7 @@ import {
     Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 interface PlatformPost {
     platform: "LinkedIn" | "Twitter" | "Instagram" | "Generic";
@@ -226,8 +227,8 @@ export default function ContentEnginePage() {
                                             <Copy className="w-3.5 h-3.5" /> Copy All
                                         </button>
                                     </div>
-                                    <div className="bg-black/40 rounded-3xl p-8 border border-white/10 text-muted-foreground leading-relaxed whitespace-pre-wrap font-medium">
-                                        {result}
+                                    <div className="bg-black/40 rounded-3xl p-8 border border-white/10 text-muted-foreground leading-relaxed markdown-content font-medium">
+                                        <ReactMarkdown>{result}</ReactMarkdown>
                                     </div>
                                 </motion.div>
                             )}
@@ -286,8 +287,8 @@ export default function ContentEnginePage() {
                                                         <h4 className="text-sm font-bold text-white mb-1">{post.title}</h4>
                                                         <p className="text-[10px] text-white/40 font-bold uppercase tracking-tighter italic">Focus: {post.focus}</p>
                                                     </div>
-                                                    <div className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap font-medium h-full italic">
-                                                        {post.content}
+                                                    <div className="text-sm text-white/70 leading-relaxed markdown-content font-medium h-full italic">
+                                                        <ReactMarkdown>{post.content}</ReactMarkdown>
                                                     </div>
                                                     {post.visualSuggestion && (
                                                         <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-dashed border-white/10">
