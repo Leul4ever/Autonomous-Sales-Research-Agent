@@ -20,7 +20,18 @@ except Exception as e:
     # or fail early if the DB is strictly required. 
     # For now, we log it and continue so the app can at least serve the health check.
 
-app = FastAPI(title="AI GTM Engine Backend")
+from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
+
+app = FastAPI(
+    title="AI GTM Engine Backend",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    redirect_slashes=False
+)
+
+# Enable ProxyHeadersMiddleware to correctly handle X-Forwarded-For and X-Forwarded-Proto
+# This is crucial for Render/Vercel proxying
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["*"])
 
 # Configure CORS
 app.add_middleware(

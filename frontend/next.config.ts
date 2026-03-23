@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
-const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
+// Sanitize backendUrl: remove trailing slash if present
+const backendUrl = (process.env.BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
   // Proxy backend API through Next.js dev server to avoid CORS/LAN "localhost" issues.
