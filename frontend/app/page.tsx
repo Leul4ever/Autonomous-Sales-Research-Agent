@@ -60,7 +60,7 @@ export default function Home() {
             <span className="text-blue-500">Autonomous AI.</span>
           </h1>
           <p className="text-muted-foreground text-xl max-w-2xl leading-relaxed">
-            The AI GTM Engine unifies lead research, voice automation, and content velocity into a single, premium dashboard. Built for Brainlancer builders.
+            The AI GTM Engine unifies lead research, voice automation, and content velocity into a single, premium dashboard.
           </p>
 
           <div className="flex gap-4 pt-4">

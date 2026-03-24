@@ -1,0 +1,60 @@
+# AI GTM Engine: Technical Architecture Overview
+
+This document summarizes the full-stack architecture and technology choices for the **AI GTM (Go-To-Market) Engine**. Each technology was selected to balance cutting-edge AI performance with high-speed development and a premium user experience.
+
+---
+
+## 1. Frontend: The "Face"
+**Primary Framework:** Next.js 16.1.6 (App Router + Turbopack)
+- **Why:** Enables high-performance server-side rendering and simplified routing.
+- **TypeScript:** Used throughout the project for strict type safety, reducing runtime errors.
+- **Tailwind CSS 4.0:** Utilized for modern, responsive layouts with a custom "Glassmorphism" theme to create a premium, high-tech aesthetic.
+- **Framer Motion:** Powering all micro-animations and smooth state transitions to make the UI feel "alive."
+- **Lucide React:** Providing a clean, consistent iconography system.
+
+---
+
+## 2. Backend: The "Engine"
+**Primary Framework:** FastAPI (Python 3.10+)
+- **Why:** Chosen for its industry-leading performance and native support for asynchronous (`async/await`) operations, which is critical when waiting for multiple AI/API responses.
+- **SQLAlchemy:** An Object-Relational Mapper (ORM) used to handle complex data relationships without writing raw SQL.
+- **SQLite:** A lightweight, persistent database ([sql_app.db](file:///d:/kifyaAi/AI%20GTM%20Engine/backend/sql_app.db)) used for storing leads, call logs, and AI-generated social content.
+
+---
+
+## 3. The AI Brain (Agents & Intelligence)
+**LangChain Framework:** The core orchestration layer that allows us to chain different AI models and tools together.
+
+### [Agent 1] Lead Research Agent
+- **LLM:** Google Gemini 1.5 Flash.
+- **Search Tool:** DuckDuckGo Search API (via LangChain).
+- **Function:** Performs deep web research on a company name to understand its current business focus and target market.
+
+### [Agent 2] Content Generation Engine
+- **LLM:** Google Gemini 1.5 Flash.
+- **Function:** Specifically prompts the AI as a "World Class Social Media Strategist" to multiplex a single topic into structured posts for LinkedIn, X (Twitter), and Instagram, plus a 60-second video script.
+
+---
+
+## 4. Specialized API Integrations
+The engine uses three critical "hands" to perform real-world actions:
+
+1.  **Hunter.io API**:
+    - **Use:** Connected directly to the Lead Gen module.
+    - **Purpose:** Takes a company domain (e.g., `tesla.com`) and returns verified professional email addresses for key decision-makers.
+2.  **Vapi AI**:
+    - **Use:** Powers the "Voice Agent" (Riley).
+    - **Purpose:** A low-latency (<500ms) voice platform that converts AI logic into a human-sounding phone call with natural breathing and pauses.
+3.  **Google Gemini API**:
+    - **Use:** The primary reasoning engine.
+    - **Purpose:** Handled via the `langchain-google-genai` package for high-speed, cost-effective inference.
+
+---
+
+## 5. System Interconnectivity
+- **Next.js Rewrite Proxy:** We configured [next.config.ts](file:///d:/kifyaAi/AI%20GTM%20Engine/frontend/next.config.ts) to route all `/api/*` requests to the FastAPI backend running on port `8000`. This prevents "Cross-Origin" errors and allows the frontend and backend to talk as if they were one single system.
+- **Async Execution:** Both the frontend and backend use asynchronous calls to ensure the UI never "freezes" while the AI is thinking or searching the web.
+
+---
+
+**Summary for Meeting:** This stack allows a single user to perform the work of a research team, a copywriter, and a telemarketer simultaneously.
